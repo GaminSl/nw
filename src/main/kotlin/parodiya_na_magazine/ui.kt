@@ -15,34 +15,58 @@ fun showProductTypes(type: String) {
         )
         else -> emptyList()
     }
-
-    println("Выберите раздел")
-    productTypes.forEachIndexed { index, product ->
-        println("${index + 1}: ${product.name}")
+    if (productTypes.isEmpty()) {
+        println("Неизвестная категория товаров.")
+        return
     }
 
-    val typeChoice = readLine()?.toIntOrNull()
-    if (typeChoice != null && typeChoice in 1..productTypes.size) {
-        showBrands(productTypes[typeChoice - 1])
-    } else {
-        println("Неверный выбор.")
+    while (true) {
+        println("Выберите раздел:")
+        productTypes.forEachIndexed { index, product ->
+            println("${index + 1}: ${product.name}")
+        }
+        println("${productTypes.size + 1}: Вернуться в главное меню")
+
+        val typeChoice = readLine()?.toIntOrNull()
+        if (typeChoice != null && typeChoice in 1..productTypes.size) {
+            showBrands(productTypes[typeChoice - 1])
+            break
+        } else if (typeChoice == productTypes.size + 1) {
+            return
+        } else {
+            println("Неверный выбор. Попробуйте снова.")
+        }
     }
 }
 fun showBrands(productType: ProductType) {
-    println("Выберите бренд ")
-    productType.brands.forEachIndexed { index, brand ->
-        println("${index + 1}: ${brand.name} - ${brand.price} руб.")
-    }
+    while (true) {
+        println("Выберите бренд:")
 
-    val brandChoice = readLine()?.toIntOrNull()
-    if (brandChoice != null && brandChoice in 1..productType.brands.size) {
-        val selectedBrand = productType.brands[brandChoice - 1]
-        manageFavoritesAndPurchases(selectedBrand)
-    } else {
-        println("Неверный выбор.")
+        productType.brands.forEachIndexed { index, brand ->
+            println("${index + 1}: ${brand.name} - ${brand.price} руб.")
+        }
+
+        println("${productType.brands.size + 1}: Вернуться в главное меню")
+
+        val brandChoice = readLine()?.toIntOrNull()
+
+        when {
+            brandChoice != null && brandChoice in 1..productType.brands.size -> {
+                val selectedBrand = productType.brands[brandChoice - 1]
+                manageFavoritesAndPurchases(selectedBrand)
+                break
+            }
+            brandChoice == productType.brands.size + 1 -> {
+                return
+            }
+            else -> {
+                println("Неверный выбор. Пожалуйста, выберите номер бренда из списка или вернитесь в главное меню.")
+            }
+        }
     }
 }
-fun showFavorites() {
+
+fun showFavorites(favorites: MutableList<String>, purchases: MutableList<String>) {
     if (favorites.isEmpty()) {
         println("Избранное пусто.")
     } else {
@@ -58,14 +82,15 @@ fun showFavorites() {
 
         val action = readLine()?.toIntOrNull()
         when(action) {
-            1 -> buyAllFavorites()
-            2 -> purchaseFromFavorites()
+            1 -> buyAllFavorites(favorites, purchases) // Обновите список покупок
+            2 -> purchaseFromFavorites(favorites, purchases) // Обновите список покупок
             3 -> return
             else -> println("Неверный выбор, попробуйте снова.")
         }
     }
 }
-fun showPurchases() {
+
+fun showPurchases(purchases: MutableList<String>) {
     if (purchases.isEmpty()) {
         println("Покупки пусты.")
     } else {

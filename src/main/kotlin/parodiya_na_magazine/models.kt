@@ -1,4 +1,7 @@
 package parodiya_na_magazine
+
+import java.io.File
+
 data class ProductType(val name: String, val brands: List<Brand>)
 data class Brand(val name: String, val price: Int)
 
@@ -8,8 +11,12 @@ enum class MainMenu(val num: Int, val nameOperation: String) {
     CLOTHING_OPERATION(2, "Одежда"),
     ACCESSORIES_OPERATION(3, "Аксессуары"),
     FAVORITES(4, "Избранное"),
-    PURCHASES(5, "Покупки")
+    PURCHASES(5, "Корзина покупок")
 }
 
 val favorites = mutableListOf<String>()
 val purchases = mutableListOf<String>()
+
+
+val purchasesFile = File("purchases.json")
+val favoritesFile = File("favorites.json")
